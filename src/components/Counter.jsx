@@ -19,7 +19,7 @@ function Counter() {
             isMounted.current = true; // Set to true after the first render
             return; // Skip the effect's logic on the first render
         }
-        if(countHistory.length > 0){
+        if(!(count == 0 && countHistory.length == 1)){
             setCountHistory([...countHistory,count]);
         }
     },[count])
@@ -40,13 +40,6 @@ function Counter() {
         }
     },[step,count,countHistory])
 
-    useEffect(()=>{
-        document.addEventListener("keydown",handleKeyDown);
-        return () => {
-            document.removeEventListener("keydown",handleKeyDown);
-        }
-    },[]);
-
     const handleKeyDown = (e) => {
         if(e.key == "ArrowUp"){
             setCount((prev)=>prev+step);
@@ -55,6 +48,13 @@ function Counter() {
             setCount((prev)=>prev-step);
         }
     }
+
+    useEffect(()=>{
+        document.addEventListener("keydown",handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown",handleKeyDown);
+        }
+    },[]);
 
   return (
     <>
@@ -71,8 +71,7 @@ function Counter() {
             <label htmlFor="step">Step Value: </label>
             <input type="number" name="step" value={step} min={1} aria-label="Increment or decrement by this number" onChange={(e)=>{setStep(Number(e.target.value))}} />
         </div>
-        {!saving && (<p>Changes saved.</p>)}
-        {saving && (<p>Saving to localStorage...</p>)}
+        <p>{saving ? "Saving to localStorage..." : "Changes saved."}</p>
         <div className="w-full">
             <h3>Count History:</h3>
             <ul>
